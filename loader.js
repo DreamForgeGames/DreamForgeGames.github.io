@@ -8,7 +8,6 @@
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  // Normalisiert Pfade
   function normalizePath(p) {
     if (!p) return '/';
     if (p.length > 1 && p.endsWith('/')) return p.slice(0, -1);
@@ -29,7 +28,6 @@
         if (resp.ok) return { html: await resp.text(), path: p };
       } catch {}
     }
-    // Fallback 404
     try {
       const resp404 = await fetch('pages/404.html', { cache: 'no-cache' });
       if (resp404.ok) return { html: await resp404.text(), path: 'pages/404.html', notFound: true };
@@ -38,15 +36,17 @@
   }
 
   async function render(path) {
+    // path aus ?p= oder location.pathname
     const [cleanPath, hash] = path.split('#');
+
     const contentEl = document.getElementById('page-content');
     if (!contentEl) return;
     contentEl.innerHTML = `<p class="text-center">Lade…</p>`;
 
-    const { html, path: loadedPath } = await fetchPageForPath(cleanPath);
+    const { html } = await fetchPageForPath(cleanPath);
     contentEl.innerHTML = html;
 
-    // History aufräumen (entfernt ?p=)
+    // URL sauber setzen (inkl. Hash) → hier sauber die ursprüngliche URL nutzen
     window.history.replaceState({}, '', cleanPath + (hash ? '#' + hash : ''));
 
     // Scrollen
@@ -56,23 +56,22 @@
 
   function getRequestedPath() {
     const params = new URLSearchParams(window.location.search);
-    const forced = params.get('p');
-    if (forced) return decodeURIComponent(forced);
-    return window.location.pathname + window.location.hash;
+    const p = params.get('p');
+    if (p) return decodeURIComponent(p); // originaler Pfad
+    return window.location.pathname + window.location.hash; // root oder hash
   }
 
-  // Klick-Handler für interne Links
+  // Klicks auf interne Links abfangen
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a');
     if (!a) return;
     const href = a.getAttribute('href') || '';
     if (a.target === '_blank' || a.hasAttribute('download')) return;
     if (href.startsWith('http') && !href.startsWith(location.origin)) return;
+    if (!href.startsWith('/')) return;
 
-    if (href.startsWith('/')) {
-      e.preventDefault();
-      render(href);
-    }
+    e.preventDefault();
+    render(href);
   });
 
   // Back/forward
