@@ -1,13 +1,10 @@
 (function() {
-  // Hilfsfunktion zum Scrollen, sobald das Ziel-Element existiert
   function scrollToHash(hash) {
     if (!hash) return;
     const el = document.querySelector(hash);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     } else {
-      // Wenn das Element noch nicht existiert (z. B. SPA lädt noch Inhalte)
-      // später nochmal versuchen
       const observer = new MutationObserver(() => {
         const target = document.querySelector(hash);
         if (target) {
@@ -21,10 +18,16 @@
 
   const params = new URLSearchParams(window.location.search);
   const pathParam = params.get("p");
-  const fullPath = window.location.pathname + window.location.hash;
+  const pathname = window.location.pathname;
+  const hash = window.location.hash;
+  const fullPath = pathname + hash;
+
+  // 🔹 Spezialfall: root + optional hash → nichts redirecten
+  const isRootWithHash = (pathname === "/" || pathname === "/index.html") && hash;
+  const isRoot = pathname === "/" || pathname === "/index.html";
 
   // 🔹 Fall 1: Direktaufruf von /about-us oder /about-us#foo → Redirect zu /?p=/about-us#foo
-  if (!pathParam && window.location.pathname !== "/" && !window.location.pathname.startsWith("/index.html")) {
+  if (!pathParam && !isRoot && !isRootWithHash) {
     const newUrl = "/?p=" + encodeURIComponent(fullPath);
     window.location.replace(newUrl);
     return;
@@ -33,33 +36,31 @@
   // 🔹 Fall 2: Normaler Aufruf mit ?p= → URL wieder schön machen
   if (pathParam) {
     const decodedPath = decodeURIComponent(pathParam);
-    const [cleanPath, hash] = decodedPath.split("#");
-    const newUrl = cleanPath + (hash ? "#" + hash : "");
+    const [cleanPath, hashPart] = decodedPath.split("#");
+    const newUrl = cleanPath + (hashPart ? "#" + hashPart : "");
 
     // Ohne Neuladen URL ersetzen
     window.history.replaceState(null, "", newUrl);
 
-    // 🔹 Jetzt kann deine App z. B. Inhalte laden
-    // Hier kannst du deinen eigenen Router oder Lade-Logik anstoßen
+    // Inhalte laden, z.B. dein Router
     // loadPage(cleanPath);
 
-    // 🔹 Falls ein Hash existiert → scrollen, sobald DOM fertig
+    // Hash scrollen
     window.addEventListener("DOMContentLoaded", () => {
-      if (hash) scrollToHash("#" + hash);
+      if (hashPart) scrollToHash("#" + hashPart);
     });
   }
 
-  // 🔹 Fall 3: Wenn jemand F5 auf /about-us drückt → GitHub Pages liefert 404,
-  // daher beim nächsten Mal automatisch umleiten
+  // 🔹 Hash nachträglich ändern (z. B. Klick auf #foo-Link)
+  window.addEventListener("hashchange", () => {
+    scrollToHash(window.location.hash);
+  });
+
+  // 🔹 Optional: Fallback bei 404 (GitHub Pages)
   window.addEventListener("error", (event) => {
     if (event.message && event.message.includes("404") && !pathParam) {
       const newUrl = "/?p=" + encodeURIComponent(fullPath);
       window.location.replace(newUrl);
     }
-  });
-
-  // 🔹 Bonus: Wenn jemand später Hash ändert (z. B. Klick auf #foo-Link)
-  window.addEventListener("hashchange", () => {
-    scrollToHash(window.location.hash);
   });
 })();
