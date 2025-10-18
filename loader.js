@@ -60,7 +60,7 @@
         return { html: text, path: 'pages/404.html', notFound: true };
       }
     } catch (e) {
-      warn('pages/404.html available', e);
+      warn('pages/404.html not available', e);
     }
 
     return { html: `<h2>404</h2><p>Seite ${slug} nicht gefunden.</p>`, path: null, notFound: true };
@@ -88,7 +88,18 @@
       }
     } else {
       // ensure the URL corresponds when arriving via ?p=...
-      // do not replace to avoid breaking back-button for real navigations
+      // (used when redirected from GitHub Pages 404.html)
+      const params = new URLSearchParams(window.location.search);
+      const forced = params.get('p') || params.get('path');
+      if (forced) {
+        try {
+          const cleanPath = new URL(forced, location.origin).pathname;
+          window.history.replaceState({}, '', cleanPath);
+          log('Replaced URL from ?p=... to', cleanPath);
+        } catch (e) {
+          warn('replaceState cleanup failed', e);
+        }
+      }
     }
 
     // set active nav link
@@ -117,7 +128,7 @@
         // Resolve the link's path
         const resolved = href.startsWith('/') ? href : new URL(href, location.origin + currentPath).pathname;
         if (normalizePath(resolved) === currentPath ||
-            (currentPath === '/' && (href === '/' || href === '' || href === 'index.html'))) {
+          (currentPath === '/' && (href === '/' || href === '' || href === 'index.html'))) {
           a.classList.add('active');
         } else {
           a.classList.remove('active');
