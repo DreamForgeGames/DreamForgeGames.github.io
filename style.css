@@ -236,45 +236,21 @@ body {
 
 
 
-
-.not-found {
-  width: 560px;
-  height: 225px;
-
-}
-.starry-sky {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-}
-.search-icon {
-  display: inline-block;
-}
-.notfound-copy {
-  color: #fff;
-  position: fixed;
-  top: 25px;
-  right: 10%;
-  text-align: right;
-}
-/* change to alternating star opacities */
-.all-stars {
-  animation: blinkblink 7s linear infinite;
+/* Banner komplett ausblenden */
+.goog-te-banner-frame {
+  display: none !important;
 }
 
-@keyframes blinkblink {  
-  50% { opacity: 0.1; }
+/* Body oben normal halten */
+body {
+  top: 0 !important;
+  padding-top: 0 !important;
 }
-input[type=text] {
-  color: #fff;
-  background-color: #0a1821;
-  padding:5px; 
-  border: none; 
-  border-bottom:2px solid #ccc; 
-  font-size: 18px;
-}
-input[type=text]:focus {
-  border-color:none; 
-  border-bottom:2px solid #ccc;
+/* Banner unter Navbar fixieren */
+#\:2\.container {
+  position: fixed !important;
+  top: 56px !important; /* Höhe Navbar */
+  left: 0;
+  width: 100% !important;
+  z-index: 1050 !important;
 }
