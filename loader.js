@@ -1,66 +1,94 @@
 (function() {
+  const DEBUG = true;
+  const log = (...a) => { if (DEBUG) console.log('[router]', ...a); };
+
+  // Hilfsfunktion: scrollen zu Hash
   function scrollToHash(hash) {
     if (!hash) return;
     const el = document.querySelector(hash);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      const observer = new MutationObserver(() => {
-        const target = document.querySelector(hash);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth" });
-          observer.disconnect();
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  const params = new URLSearchParams(window.location.search);
-  const pathParam = params.get("p");
-  const pathname = window.location.pathname;
-  const hash = window.location.hash;
-  const fullPath = pathname + hash;
-
-  // 🔹 Spezialfall: root + optional hash → nichts redirecten
-  const isRootWithHash = (pathname === "/" || pathname === "/index.html") && hash;
-  const isRoot = pathname === "/" || pathname === "/index.html";
-
-  // 🔹 Fall 1: Direktaufruf von /about-us oder /about-us#foo → Redirect zu /?p=/about-us#foo
-  if (!pathParam && !isRoot && !isRootWithHash) {
-    const newUrl = "/?p=" + encodeURIComponent(fullPath);
-    window.location.replace(newUrl);
-    return;
+  // Holen des aktuellen Pfads, inklusive ?p=
+  function getRequestedPath() {
+    const params = new URLSearchParams(window.location.search);
+    const forced = params.get('p');
+    if (forced) return decodeURIComponent(forced);
+    return window.location.pathname + window.location.hash;
   }
 
-  // 🔹 Fall 2: Normaler Aufruf mit ?p= → URL wieder schön machen
-  if (pathParam) {
-    const decodedPath = decodeURIComponent(pathParam);
-    const [cleanPath, hashPart] = decodedPath.split("#");
-    const newUrl = cleanPath + (hashPart ? "#" + hashPart : "");
+  // Prüfen, ob wir ?p= redirect benötigen (GitHub Pages)
+  (function checkRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const pathParam = params.get('p');
 
-    // Ohne Neuladen URL ersetzen
-    window.history.replaceState(null, "", newUrl);
+    const pathname = window.location.pathname;
+    const hash = window.location.hash;
 
-    // Inhalte laden, z.B. dein Router
-    // loadPage(cleanPath);
-
-    // Hash scrollen
-    window.addEventListener("DOMContentLoaded", () => {
-      if (hashPart) scrollToHash("#" + hashPart);
-    });
-  }
-
-  // 🔹 Hash nachträglich ändern (z. B. Klick auf #foo-Link)
-  window.addEventListener("hashchange", () => {
-    scrollToHash(window.location.hash);
-  });
-
-  // 🔹 Optional: Fallback bei 404 (GitHub Pages)
-  window.addEventListener("error", (event) => {
-    if (event.message && event.message.includes("404") && !pathParam) {
-      const newUrl = "/?p=" + encodeURIComponent(fullPath);
+    // Nur redirecten, wenn:
+    // - nicht root
+    // - kein pathParam vorhanden
+    if (!pathParam && pathname !== '/' && !pathname.startsWith('/index.html')) {
+      const newUrl = '/?p=' + encodeURIComponent(pathname + hash);
       window.location.replace(newUrl);
     }
+  })();
+
+  // SPA Render-Funktion
+  async function render(path) {
+    const [cleanPath, hash] = path.split('#');
+
+    // Hier deine Seiten laden Logik, z.B.
+    const contentEl = document.getElementById('page-content');
+    if (!contentEl) return;
+
+    contentEl.innerHTML = `<p>Lade ${cleanPath}…</p>`;
+
+    // fetchPageForPath wie gehabt
+    const slug = cleanPath === '/' ? 'home' : cleanPath.replace(/^\//, '');
+    const candidates = [
+      `pages/${slug}.html`,
+      `pages/${slug}/index.html`,
+      `pages${cleanPath}.html`
+    ];
+
+    let html = `<h2>404</h2><p>Seite ${slug} nicht gefunden.</p>`;
+    for (const p of candidates) {
+      try {
+        const resp = await fetch(p, { cache: 'no-cache' });
+        if (resp.ok) { html = await resp.text(); break; }
+      } catch {}
+    }
+
+    contentEl.innerHTML = html;
+
+    // History sauber setzen (wenn von ?p=)
+    if (window.location.search.includes('?p=')) {
+      window.history.replaceState({}, '', cleanPath + (hash ? '#' + hash : ''));
+    }
+
+    // Scrollen zu Hash
+    if (hash) scrollToHash('#' + hash);
+  }
+
+  // Interne Links abfangen
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (href.startsWith('http') && !href.startsWith(location.origin)) return;
+    if (a.target === '_blank' || a.hasAttribute('download')) return;
+    if (!href.startsWith('/')) return;
+
+    e.preventDefault();
+    render(href);
+  });
+
+  // Back/Forward
+  window.addEventListener('popstate', () => render(getRequestedPath()));
+
+  // Initial render
+  document.addEventListener('DOMContentLoaded', () => {
+    render(getRequestedPath());
   });
 })();
