@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>Redirecting…</title>
+  <script>
+    // Wenn der Server (GitHub Pages) eine Route nicht findet, liefert er 404.html.
+    // Diese Seite leitet Besucher zurück zu /index.html und übergibt die Original-URL
+    // als Query-Parameter `p`, damit loader.js die korrekte Seite lädt.
+    (function () {
+      var origin = location.origin || (location.protocol + '//' + location.host);
+      var path = location.pathname + location.search + location.hash;
+      var target = '/?p=' + encodeURIComponent(path);
+      location.replace(target);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting…</p>
+</body>
+</html>

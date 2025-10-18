@@ -1,22 +1,55 @@
-.content {
-  margin: 30px;
+/* =========================================
+   Globales Layout
+========================================= */
+
+:root {
+  --bs-primary: #ff6600;
+  --bs-secondary: #0099ff;
+
+}
+.text-primary {
+  color: #ff6600 !important;
+}
+body {
+  
+  margin: 0;
+  color: #fff;
 }
 
-/* Fullscreen-Intro */
+#page-content {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* =========================================
+   Content
+========================================= */
+
+.content {
+  margin: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================================
+   Fullscreen Intro
+========================================= */
+
 .center-screen {
   height: 100vh;
-  /* nimmt ganze Höhe vom Bildschirm */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* vertikal zentrieren */
   align-items: center;
-  /* horizontal zentrieren */
   text-align: center;
+  padding: 1rem;
 }
 
 #welcome-image {
   height: 50vh;
+  max-height: 100%;
+  width: auto;
   opacity: 0;
   animation: logoIntro 1s ease-out forwards;
 }
@@ -32,7 +65,6 @@
     transform: translateY(-2cm);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;
@@ -43,129 +75,50 @@
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
 }
 
-/* Restlicher Content */
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Footer normal unterhalb */
-#footer {
-  margin-top: 3rem;
-  width: 100%;
-}
-
-#about-us {
-  background-color: rgb(70, 54, 48);
-  border-radius: 70px;
-  /* Rundung, kannst du nach Geschmack anpassen */
-  padding: 2rem;
-  /* etwas Innenabstand, sonst klebt der Text am Rand */
-  margin: 2rem auto;
-  /* Abstand nach oben/unten und mittig horizontal */
-  max-width: 1200px;
-  /* maximale Breite, sonst zieht es sich über den ganzen Bildschirm */
-}
-
-/* Globale Primärfarbe ändern */
-:root {
-  --bs-primary: #ff6600;
-  /* neue Primärfarbe */
-  --bs-secondary: #0099ff;
-  /* neue Sekundärfarbe */
-}
+/* =========================================
+   Buttons
+========================================= */
 
 .btn-primary {
-  background-color: #ff6600 !important;
-  /* normale Farbe */
-  border-color: #ff6600 !important;
-  color: white !important;
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: #fff !important;
 }
 
 .btn-primary:hover,
 .btn-primary:focus,
-.btn-primary:active,
-.btn-primary:visited,
-.btn-primary:focus-visible {
+.btn-primary:active {
   background-color: #ff8533 !important;
-  /* Hover / Focus / Active */
   border-color: #ff8533 !important;
-  color: white !important;
+  color: #fff !important;
 }
 
-/* Codebox Styling: sieht aus wie eine hübsche, monospaced Code-Box */
-.codebox {
-  font-family: "Fira Code", "Source Code Pro", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-  background: linear-gradient(180deg, rgba(16, 18, 22, 0.98), rgba(10, 12, 14, 0.98));
-  color: #d6deff;
-  /* heller Text */
-  padding: 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6), inset 0 -2px 0 rgba(255, 255, 255, 0.02);
-  overflow: auto;
-  white-space: pre-wrap;
-  /* Brüche erhalten, aber Code-Feeling bleibt */
-  line-height: 1.45;
-  position: relative;
-  min-height: 6rem;
+.btn-outline-secondary {
+  color: var(--bs-secondary) !important;
+  border-color: var(--bs-secondary) !important;
 }
 
-
-/* kleine Kopfzeile mit Dateiname und Aktionen */
-.codebox__header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: absolute;
-  top: -2.2rem;
-  left: 1rem;
-  font-size: 0.85rem;
-  color: #98a0ff;
-  background: transparent;
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: var(--bs-secondary) !important;
+  color: #fff !important;
 }
 
+/* =========================================
+   About Us / Sections
+========================================= */
 
-.codebox__filename {
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-
-/* Lade- und Fehlerbox */
-.codebox__meta {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.75rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-  user-select: none;
-}
-
-
-/* einfache Zeilennummern-Spalte */
-.codebox__pre {
-  counter-reset: linenumber;
-  padding-left: 3.5rem;
-  /* Platz für Nummern */
-}
-
-
-.codebox__pre>code {
-  display: block;
-}
-
-#privacyCodebox {
-  margin: 20px;
+#about-us {
+  background-color: rgb(70, 54, 48);
+  border-radius: 2rem;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
 }
 
 .profile-card {
@@ -203,11 +156,80 @@
   border: 2px solid #fff;
 }
 
+/* =========================================
+   Footer
+========================================= */
+
+#footer {
+  margin-top: 3rem;
+  width: 100%;
+  text-align: center;
+}
+
+/* =========================================
+   Codebox
+========================================= */
+
+.codebox {
+  font-family: "Fira Code", "Source Code Pro", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  background: linear-gradient(180deg, rgba(16, 18, 22, 0.98), rgba(10, 12, 14, 0.98));
+  color: #d6deff;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6), inset 0 -2px 0 rgba(255, 255, 255, 0.02);
+  overflow: auto;
+  white-space: pre-wrap;
+  line-height: 1.45;
+  position: relative;
+  min-height: 6rem;
+}
+
+.codebox__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  top: -2.2rem;
+  left: 1rem;
+  font-size: 0.85rem;
+  color: #98a0ff;
+  background: transparent;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.codebox__filename {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.codebox__meta {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  user-select: none;
+}
+
+.codebox__pre {
+  counter-reset: linenumber;
+  padding-left: 3.5rem;
+}
+
+.codebox__pre>code {
+  display: block;
+}
+
+/* =========================================
+   Policy / Privacy
+========================================= */
+
 #policy-container {
   background-color: #333333;
 }
 
 #policy-content {
   margin: 1%;
-
 }
