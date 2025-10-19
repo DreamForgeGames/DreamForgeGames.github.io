@@ -4,7 +4,7 @@
 
     function loadRSS() {
         log("RSS wird geladen...");
-        const rssUrl = "news.xml";
+        const rssUrl = "/news.xml";
         const container = document.getElementById("news-content");
         if (!container) {
             log("Div #news-content nicht gefunden");
