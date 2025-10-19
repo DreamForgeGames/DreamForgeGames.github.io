@@ -1,16 +1,20 @@
-(function () {
+(function() {
     const DEBUG = true;
     const log = (...a) => { if (DEBUG) console.log('[RSS]', ...a); };
 
     function loadRSS() {
         log("RSS wird geladen...");
-        const rssUrl = "/news.xml";
+        const rssUrl = "/news.xml"; // Pfad auf GitHub Pages
         const container = document.getElementById("news-content");
         if (!container) {
             log("Div #news-content nicht gefunden");
             return;
         }
         container.innerHTML = ''; // alte Karten entfernen
+
+        // Lade-Hinweis entfernen, falls vorhanden
+        const loadingEl = document.getElementById("news-loading");
+        if (loadingEl) loadingEl.remove();
 
         fetch(rssUrl)
             .then(res => res.text())
@@ -46,6 +50,8 @@
 
     // --- Event Listener für pageRendered ---
     document.addEventListener('pageRendered', (e) => {
-        loadRSS();
+        if (e.detail.path === '/news') {
+            loadRSS();
+        }
     });
 })();
