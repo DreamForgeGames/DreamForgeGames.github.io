@@ -21,6 +21,7 @@ body {
 #page-content {
   padding-top: 2rem;
   padding-bottom: 2rem;
+  margin-top: 3%;
 }
 
 /* =========================================
@@ -239,17 +240,6 @@ body {
 }
 
 
-
-/* Banner komplett ausblenden */
-.goog-te-banner-frame {
-  display: none !important;
-}
-
-/* Body oben normal halten */
-body {
-  top: 0 !important;
-  padding-top: 0 !important;
-}
 
 /* Banner unter Navbar fixieren */
 #\:2\.container {
