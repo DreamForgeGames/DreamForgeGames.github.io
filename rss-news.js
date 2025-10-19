@@ -4,7 +4,7 @@
 
     function loadRSS() {
         log("RSS wird geladen...");
-        const rssUrl = "/news.xml"; // Pfad auf GitHub Pages
+        const rssUrl = "/rss_news.xml   "; // Pfad auf GitHub Pages
         const container = document.getElementById("news-content");
         if (!container) {
             log("Div #news-content nicht gefunden");

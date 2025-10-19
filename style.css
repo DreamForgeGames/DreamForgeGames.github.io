@@ -117,6 +117,26 @@ body {
 /* =========================================
    About Us / Sections
 ========================================= */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#page-content {
+  flex: 1;
+  /* nimmt den restlichen Platz ein */
+}
+
+footer {
+  flex-shrink: 0;
+  /* Footer wird nicht kleiner als Inhalt */
+}
 
 #about-us {
   background-color: rgb(70, 54, 48);
